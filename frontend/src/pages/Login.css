@@ -1,0 +1,144 @@
+
+/* Add to the top of your Login.css file */
+html, body, #root {
+  height: 100%; /* Ensures the entire document and root React element take full height */
+  margin: 0;    /* Removes default browser margins */
+  padding: 0;   /* Removes default browser padding */
+}
+
+/* Update the login-container styles */
+.login-container {
+  display: flex;
+  height: 100vh; /* This already makes it full height, but the above rules ensure it works consistently */
+  width: 100vw;  /* Add this to ensure it takes up the full width */
+  font-family: Arial, sans-serif;
+}
+
+/* General Layout */
+.login-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Left Panel (Red-Black Gradient) */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(to bottom, #d90429, #4a000a);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  padding: 20px;
+}
+
+.left-panel .panel-content {
+  width: 80%;
+  margin-right: auto;
+}
+
+.left-panel h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.left-panel h2 {
+  font-size: 1.5em;
+  margin-top: 50px;
+  font-weight: normal;
+}
+
+.left-panel h1 span {
+  color: #00ff00; /* Green color for 'Registration' */
+}
+
+.left-panel .bus-icon {
+  font-size: 2em;
+  margin: 10px 0;
+}
+
+.left-panel p {
+  font-size: 1em;
+  line-height: 1.5;
+  margin-top: 10px;
+  opacity: 0.8;
+}
+
+/* Right Panel (Login Form) */
+.right-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+}
+
+.login-card {
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: 1.8em;
+  color: #d90429;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group .icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #d90429;
+}
+
+.input-group .show-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+  cursor: pointer;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #d90429;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #a80321;
+}

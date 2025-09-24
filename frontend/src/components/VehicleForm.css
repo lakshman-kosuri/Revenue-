@@ -1,0 +1,148 @@
+/* ================= Modern Form Container ================= */
+.vehicle-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Increased gap for more breathing room */
+  background-color: #f9fafc; /* Lighter background */
+  padding: 40px; /* More padding */
+  border-radius: 16px; /* More rounded corners */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Softer, larger shadow */
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* Modern font stack */
+  max-width: 850px;
+  margin: 40px auto;
+  transition: all 0.3s ease;
+}
+
+.vehicle-form:hover {
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.12);
+}
+
+.vehicle-form h3 {
+  border-bottom: 2px solid #e0e7f1; /* Softer divider line */
+  padding-bottom: 12px;
+  margin-top: 0;
+  font-size: 1.8em; /* Slightly larger heading */
+  color: #1e3a5f; /* Darker, more professional color */
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ================= Form Sections & Grid Layout ================= */
+.form-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px; /* Increased gap */
+}
+
+.form-section.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.form-section label {
+  font-weight: 600;
+  color: #4a5568; /* Darker label color */
+  margin-bottom: 8px;
+  display: block; /* Make labels block-level for better spacing */
+}
+
+/* ================= Input Fields ================= */
+.form-section input {
+  width: 100%;
+  padding: 14px 16px; /* Larger padding for a better feel */
+  border: 1px solid #e2e8f0; /* Softer border color */
+  border-radius: 8px; /* More rounded corners */
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #333;
+  background-color: #ffffff;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.form-section input:hover {
+  border-color: #cbd5e0;
+}
+
+.form-section input:focus {
+  outline: none;
+  border-color: #d90429;
+  box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.1);
+}
+
+/* ================= File Upload Section ================= */
+.file-upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.file-upload-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-upload-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 2px dashed #d90429;
+  border-radius: 12px;
+  background-color: #fceceb;
+  transition: all 0.3s ease;
+}
+
+.file-upload-icon:hover {
+  background-color: #f9d9d5;
+}
+
+.file-name {
+  font-style: italic;
+  color: #555;
+  font-size: 0.9em;
+}
+
+/* Hiding the default file input button */
+#license-pdf-upload {
+  display: none;
+}
+
+/* ================= Submit Button ================= */
+.add-vehicle-btn {
+  background-color: #d90429;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1.2em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(217, 4, 41, 0.2);
+}
+
+.add-vehicle-btn:hover {
+  background-color: #a80321;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(217, 4, 41, 0.3);
+}
+
+/* ================= Responsive Design ================= */
+@media (max-width: 768px) {
+  .form-section.grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .vehicle-form {
+    padding: 25px;
+    gap: 25px;
+    margin: 20px auto;
+  }
+  .add-vehicle-btn {
+    font-size: 1.1em;
+    padding: 14px;
+  }
+}
