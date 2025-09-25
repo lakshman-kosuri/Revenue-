@@ -1,5 +1,4 @@
-// server.js
-import 'dotenv/config';           // Load environment variables
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
@@ -9,12 +8,21 @@ import path from 'path';
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());        // Parse JSON
-app.use(express.urlencoded({ extended: true })); // Parse form-data (for multer)
+// ✅ Configure CORS explicitly
+const corsOptions = {
+  origin: 'https://effervescent-fudge-5c613b.netlify.app', // your frontend URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // if you use cookies or auth headers
+};
 
-// Serve uploaded PDFs if using file storage (optional if storing in DB)
+app.use(cors(corsOptions));
+
+// Parse JSON and form-data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded PDFs
 app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
 
 // Connect to MongoDB
