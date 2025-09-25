@@ -10,7 +10,7 @@ const app = express();
 
 // ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://rto-portal.netlify.app/', // your frontend URL
+  origin: 'https://rto-portal.netlify.app', // your frontend URL
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // if you use cookies or auth headers
