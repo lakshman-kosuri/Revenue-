@@ -1,5 +1,5 @@
 /* ================= Modern Container & Heading ================= */
-.vehicle-list-container {
+.license-list-container {
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   padding: 30px;
   background-color: #f0f2f5;
@@ -7,7 +7,7 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
-.vehicle-list-container h3 {
+.license-list-container h3 {
   font-size: 2.2em;
   color: #1e3a5f;
   margin-bottom: 25px;
@@ -61,35 +61,30 @@
   outline: none;
 }
 
-/* ================= Modern Vehicle Table Section (SCROLLABLE CONTAINER) ================= */
-.vehicle-table-section {
+/* ================= Modern License Table Section (SCROLLABLE CONTAINER) ================= */
+.license-table-section {
   margin-top: 40px;
-  /* 1. Set a max height to enable vertical scrolling */
-  max-height: 70vh; /* Adjust this value as needed (e.g., 500px or 70vh) */
-  
-  /* 2. Enable scrolling for both vertical and horizontal overflow */
+  /* Enables vertical scrolling */
+  max-height: 70vh; 
   overflow: auto; 
-  
-  /* Optional: Enhance appearance/scrolling area */
   border: 1px solid #e5e7eb;
   border-radius: 8px;
 }
 
-.vehicle-table {
-  /* 3. Set a minimum width on the table to ensure horizontal scrolling is possible */
-  min-width: 1600px; /* Increased min-width for all columns to fit */
+.license-table {
+  /* Ensures horizontal scrolling is possible */
+  min-width: 700px; 
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  margin-bottom: 0; /* Remove bottom margin to fill the container */
+  margin-bottom: 0;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
   border-radius: 8px;
-  /* Remove overflow: hidden to ensure sticky header works correctly */
 }
 
-.vehicle-table th,
-.vehicle-table td {
+.license-table th,
+.license-table td {
   padding: 15px 20px;
   text-align: left;
   color: #333;
@@ -101,25 +96,43 @@
   max-width: 150px;
 }
 
-.vehicle-table th {
-  background-color: #f7fafc;
-  font-weight: 600;
-  color: #4a5568;
+.license-table th {
+  /* 🔥 UPDATED FOR HIGHLIGHT: Using a slightly darker/more distinct color */
+  background-color: #eef2f7; /* A more noticeable light background color */
+  font-weight: 700; /* Made font bold for emphasis */
+  color: #1e3a5f; /* Used primary accent color for text */
   text-transform: uppercase;
   font-size: 0.9em;
   letter-spacing: 0.5px;
   
-  /* 4. Make the table header sticky so it stays visible while scrolling down */
+  /* Make the header sticky */
   position: sticky;
   top: 0;
-  z-index: 20; /* Ensure it stays above row content */
+  z-index: 20; 
+  /* Added border for better separation */
+  border-bottom: 2px solid #d90429; /* Using the primary brand red for emphasis */
+}
+/* 1. Center the Actions column header text */
+.license-table th:last-child {
+  text-align: center; 
 }
 
-.vehicle-table tr:last-child td {
+/* 2. Style the Actions column cell (td) to center the buttons and define the small gap */
+.license-table td:last-child {
+  text-align: center; 
+  display: flex; 
+  justify-content: center; /* Centers buttons horizontally */
+  align-items: center; 
+  
+  /* 🔥 MINIMAL GAP */
+  gap: 5px; 
+}
+
+.license-table tr:last-child td {
   border-bottom: none;
 }
 
-.vehicle-table tr:hover {
+.license-table tr:hover {
   background-color: #f1f5f9;
   transition: background-color 0.2s ease-in-out;
 }
@@ -142,13 +155,15 @@
 .cancel-btn {
   color: white;
   border: none;
-  padding: 8px 14px;
+  /* Adjusted padding for a more compact look */
+  padding: 6px 12px; 
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.1s ease;
-  font-size: 0.9em;
+  font-size: 0.85em; 
   font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0; /* Ensure the gap is controlled only by the parent's 'gap' property */
 }
 
 /* Hover effect */
@@ -160,7 +175,9 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Container for action buttons */
+/* Container for action buttons (The buttons are styled directly by td:last-child now) */
+/* The .action-buttons class is kept but not used directly on the buttons in the JSX, 
+   but its styling logic is implemented on td:last-child. */
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -197,13 +214,13 @@
 
 /* ================= Responsive Design ================= */
 @media (max-width: 1024px) {
-  .vehicle-table {
-    min-width: 1200px; /* Ensure horizontal scroll on smaller screens */
+  .license-table {
+    min-width: 900px; /* Ensure horizontal scroll on smaller screens */
   }
 }
 
 @media (max-width: 768px) {
-  .vehicle-list-container {
+  .license-list-container {
     padding: 20px;
   }
   .filters-section {
@@ -211,11 +228,11 @@
     gap: 15px;
     padding: 15px;
   }
-  .vehicle-table {
-     min-width: 1000px; /* Adjust min-width for very small devices */
+  .license-table {
+    min-width: 700px; /* Adjust min-width for very small devices */
   }
-  .vehicle-table th,
-  .vehicle-table td {
+  .license-table th,
+  .license-table td {
     font-size: 0.8em;
     padding: 10px 12px;
   }

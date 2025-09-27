@@ -1,0 +1,96 @@
+/* ================= Base Form Container and Heading (Adapted from List Styles) ================= */
+
+.license-form {
+  /* Use the list container style for the form box */
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  padding: 30px;
+  background-color: #ffffff; /* Slightly lighter background for the form itself */
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  max-width: 500px; /* Constrain the width for a better form layout */
+  margin: 40px auto; /* Center the form on the dashboard content */
+}
+
+.license-form h3 {
+  /* Use the list heading style */
+  font-size: 2.2em;
+  color: #1e3a5f;
+  margin-bottom: 25px;
+  border-bottom: 3px solid #d90429;
+  padding-bottom: 15px;
+  font-weight: 600;
+}
+
+/* ================= Form Elements (Adapted from Filter Group Styles) ================= */
+
+.license-form label {
+  /* Style for labels */
+  display: block;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  color: #4a5568;
+  font-size: 1em;
+}
+
+.license-form input,
+.license-form select {
+  /* Style for inputs */
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.license-form input:focus,
+.license-form select:focus {
+  /* Focus state using the primary accent color */
+  border-color: #3b82f6; /* Use blue accent for input focus */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
+}
+
+/* ================= Submit Button (Adapted from Save/Edit Button Styles) ================= */
+
+/* ================= Submit Button (Adapted from Save/Edit Button Styles) ================= */
+
+.license-form button[type="submit"] {
+  /* Use primary button styling for the submit action */
+  display: block;
+  width: 100%;
+  margin-top: 30px;
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  /* 🔥 CHANGED to the requested red color */
+  background-color: #d90429; /* Primary Red Color */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.license-form button[type="submit"]:hover {
+  /* Darker shade of red for hover effect */
+  background-color: #b80020; /* Darker Red for hover */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+/* ================= Responsive Design ================= */
+
+@media (max-width: 600px) {
+  .license-form {
+    padding: 20px;
+    margin: 20px 10px;
+    max-width: none; /* Allow full width on very small screens */
+  }
+
+  .license-form h3 {
+    font-size: 1.8em;
+  }
+}

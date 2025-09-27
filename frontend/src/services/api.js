@@ -1,16 +1,15 @@
 import axios from 'axios';
 
-// Base URL for backend
+// const API_URL = "https://revenue-xz4f.onrender.com/api"; // for production
 const API_URL = 'http://localhost:5000/api';
-// const API_URL = "https://rto-qoj7.onrender.com/api";
 
-// Auth API
+// ================= AUTH =================
 export const loginUser = async (username, password) => {
   const res = await axios.post(`${API_URL}/auth/login`, { username, password });
   return res.data;
 };
 
-// Vehicles API
+// ================= VEHICLES =================
 export const getVehicles = async (token) => {
   const res = await axios.get(`${API_URL}/vehicles`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -22,7 +21,7 @@ export const addVehicle = async (formData, token) => {
   const res = await axios.post(`${API_URL}/vehicles`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data', // Important for file uploads
+      'Content-Type': 'application/json',
     },
   });
   return res.data;
@@ -35,9 +34,47 @@ export const deleteVehicle = async (id, token) => {
   return res.data;
 };
 
-// ✅ Add this function if missing
 export const updateVehicle = async (id, updatedData, token) => {
   const res = await axios.put(`${API_URL}/vehicles/${id}`, updatedData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return res.data;
+};
+
+// ================= LICENSES =================
+export const getLicenses = async (token) => {
+  const res = await axios.get(`${API_URL}/licenses`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+export const addLicense = async (licenseData, token) => {
+  const res = await axios.post(`${API_URL}/licenses`, licenseData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return res.data;
+};
+
+// 🔥 ADDED: The required function for handling license edits
+export const updateLicense = async (id, updatedData, token) => {
+  const res = await axios.put(`${API_URL}/licenses/${id}`, updatedData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return res.data;
+};
+
+export const deleteLicense = async (id, token) => {
+  const res = await axios.delete(`${API_URL}/licenses/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

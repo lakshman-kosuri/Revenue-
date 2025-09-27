@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 
@@ -7,6 +8,9 @@ const App = () => {
 
   return (
     <>
+      {/* Toaster for toast messages */}
+         <Toaster position="top-center" reverseOrder={false} />
+      
       {!token ? (
         <Login setToken={setToken} />  // Show login if no token
       ) : (
