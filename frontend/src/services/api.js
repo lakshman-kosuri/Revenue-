@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "https://celadon-hotteok-d3c5f7.netlify.app"; // for production
+const API_URL = "https://revenue-xz4f.onrender.com/api"; // for production
 
 
 // ================= AUTH =================
