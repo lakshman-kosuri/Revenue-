@@ -19,7 +19,7 @@ const app = express();
 
 // ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://creative-shortbread-43ab44.netlify.app',
+  origin: 'https://rto-portal.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // if you use cookies or auth headers
