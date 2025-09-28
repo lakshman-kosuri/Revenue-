@@ -19,7 +19,7 @@ const app = express();
 
 // ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://celadon-hotteok-d3c5f7.netlify.app', // your frontend URL
+  origin: 'https://creative-shortbread-43ab44.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // if you use cookies or auth headers
