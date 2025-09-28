@@ -8,13 +8,6 @@ import licenseRoutes from './routes/licenses.js';
 
 const app = express();
 
-// ✅ Allow local frontend during development
-// const corsOptions = {
-//   origin: 'http://localhost:5173', // your React frontend
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//   allowedHeaders: ['Content-Type','Authorization'],
-//   credentials: true,
-// };
 
 
 // ✅ Configure CORS explicitly
@@ -22,7 +15,7 @@ const corsOptions = {
   origin: 'https://rto-portal.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // if you use cookies or auth headers
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
