@@ -8,31 +8,28 @@ import licenseRoutes from './routes/licenses.js';
 
 const app = express();
 
-// ✅ CORS configuration
+
+
+// ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://rto-portal.netlify.app', // your frontend URL
+  origin: 'https://rto-portal.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
-
-// ✅ Apply CORS globally
 app.use(cors(corsOptions));
 
-// ✅ Handle preflight OPTIONS requests explicitly
-app.options('*', cors(corsOptions));
-
-// ✅ Parse JSON and URL-encoded data
+// ✅ Parse JSON and form-data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Connect to MongoDB
 await connectDB(process.env.MONGO_URI);
 
-// ✅ API Routes
+// ✅ Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/licenses', licenseRoutes);
+app.use('/api/licenses', licenseRoutes); // <-- added licenses route
 
 // ✅ Default route
 app.get('/', (req, res) => {
