@@ -12,7 +12,7 @@ const app = express();
 
 // ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://rto-portal.netlify.app',
+  origin: 'https://gilded-selkie-dbc158.netlify.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
