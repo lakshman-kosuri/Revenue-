@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import './VehicleForm.css';
 import { addVehicle } from '../services/api'; // Your API function
 
 const VehicleForm = ({ token, onAdd }) => {
-
-  // Helper: convert date from YYYY-MM-DD (input) to ISO string
-  const formatDateForBackend = (dateStr) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return isNaN(date.getTime()) ? null : date.toISOString();
-  };
-
-  // Form state
   const [vehicleNo, setVehicleNo] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [address, setAddress] = useState('');
@@ -23,6 +14,8 @@ const VehicleForm = ({ token, onAdd }) => {
   const [permitExpiry, setPermitExpiry] = useState('');
   const [taxAmount, setTaxAmount] = useState('');
   const [taxExpiry, setTaxExpiry] = useState('');
+
+  // New fields
   const [fitnessNumber, setFitnessNumber] = useState('');
   const [fitnessValidity, setFitnessValidity] = useState('');
   const [pucDate, setPucDate] = useState('');
@@ -30,34 +23,26 @@ const VehicleForm = ({ token, onAdd }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const vehicleData = {
-      vehicleNo,
-      ownerName,
-      address,
-      phone,
-      brakeInsurance: { 
-        insuranceNo, 
-        expiryDate: formatDateForBackend(insuranceExpiry) 
-      },
-      permit: { 
-        permitNo, 
-        expiryDate: formatDateForBackend(permitExpiry) 
-      },
-      tax: { 
-        amount: taxAmount ? Number(taxAmount) : null, 
-        expiryDate: formatDateForBackend(taxExpiry) 
-      },
-      fitnessNumber,
-      fitnessValidity: formatDateForBackend(fitnessValidity),
-      pucDate: formatDateForBackend(pucDate),
-    };
+   const vehicleData = {
+  vehicleNo,
+  ownerName,
+  address,
+  phone,
+  brakeInsurance: { insuranceNo, expiryDate: insuranceExpiry ? new Date(insuranceExpiry) : null },
+  permit: { permitNo, expiryDate: permitExpiry ? new Date(permitExpiry) : null },
+  tax: { amount: taxAmount ? Number(taxAmount) : null, expiryDate: taxExpiry ? new Date(taxExpiry) : null },
+  fitnessNumber,
+  fitnessValidity: fitnessValidity ? new Date(fitnessValidity) : null,
+  pucDate: pucDate ? new Date(pucDate) : null,
+};
+
 
     try {
-      const data = await addVehicle(vehicleData, token);
-      toast.success(data.message || 'Vehicle added successfully!');
-      onAdd(); // Refresh parent vehicle list
+  const data = await addVehicle(vehicleData, token);
+  toast.success(data.message); // <-- Use backend message
+  onAdd(); // Refresh the vehicle list
 
-      // Reset form
+      // Reset form after successful submission
       setVehicleNo('');
       setOwnerName('');
       setAddress('');
@@ -72,15 +57,15 @@ const VehicleForm = ({ token, onAdd }) => {
       setFitnessValidity('');
       setPucDate('');
     } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || 'Error adding vehicle');
+  toast.error(err.response?.data?.message || 'Error adding vehicle');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="vehicle-form">
-      <h3>Add Vehicle Details</h3>
+      <Toaster />
 
+      <h3>Add Vehicle Details</h3>
       <div className="form-section">
         <label>Vehicle No</label>
         <input type="text" value={vehicleNo} onChange={(e) => setVehicleNo(e.target.value)} required />

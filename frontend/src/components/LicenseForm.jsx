@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast'; // Keep 'toast' for calling notifications
 import './LicenseForm.css';
-import { addLicense } from '../services/api'; // Your API call
+import { addLicense } from '../services/api'; // create this API call
+
+// Removed Toaster import since it should be global
 
 const LicenseForm = ({ token, onAdd }) => {
   const [holderName, setHolderName] = useState('');
@@ -9,76 +11,69 @@ const LicenseForm = ({ token, onAdd }) => {
   const [dob, setDob] = useState('');
   const [licenseNumber, setLicenseNumber] = useState('');
 
-  // ✅ Helper: convert input date to ISO string for backend
-  const formatDateForBackend = (dateStr) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return isNaN(date.getTime()) ? null : date.toISOString();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const licenseData = {
-      holderName,
-      phone,
-      dob: formatDateForBackend(dob),
-      licenseNumber,
-    };
+    const licenseData = { holderName, phone, dob, licenseNumber };
 
     try {
+      // API call to add the license
       await addLicense(licenseData, token);
+      
+      // ✅ SUCCESS TOAST: Called on successful API response
       toast.success('License added successfully!');
-      onAdd(); // Refresh parent list
+      
+      onAdd(); // Refresh license list in the Dashboard
 
-      // Clear form fields
+      // Clear the form fields
       setHolderName('');
       setPhone('');
       setDob('');
       setLicenseNumber('');
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to add license');
+      
+      // ✅ ERROR TOAST: Called if the API call fails
+      toast.error('Failed to add license');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="license-form">
+      
+      {/* 🔥 REMOVED: The redundant <Toaster /> component 
+          It should only be in App.js.
+      */}
+      
       <h3>Add License</h3>
-
       <label>Name</label>
-      <input
-        type="text"
-        value={holderName}
-        onChange={(e) => setHolderName(e.target.value)}
-        required
+      <input 
+        value={holderName} 
+        onChange={e => setHolderName(e.target.value)} 
+        required 
       />
-
+      
       <label>Phone</label>
-      <input
-        type="text"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+      <input 
+        value={phone} 
+        onChange={e => setPhone(e.target.value)} 
       />
-
+      
       <label>DOB</label>
-      <input
-        type="date"
-        value={dob}
-        onChange={(e) => setDob(e.target.value)}
+      <input 
+        type="date" 
+        value={dob} 
+        onChange={e => setDob(e.target.value)} 
       />
-
+      
       <label>License Number</label>
-      <input
-        type="text"
-        value={licenseNumber}
-        onChange={(e) => setLicenseNumber(e.target.value)}
-        required
+      <input 
+        value={licenseNumber} 
+        onChange={e => setLicenseNumber(e.target.value)} 
+        required 
       />
-
-      <button type="submit" className="add-license-btn">
-        Add License
-      </button>
+      
+      <button type="submit">Add License</button>
     </form>
   );
 };
