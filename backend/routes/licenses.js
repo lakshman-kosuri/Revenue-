@@ -16,15 +16,24 @@ const router = express.Router();
 // });
 
 // ✅ GET all licenses
+// ✅ GET all licenses safely
 router.get('/', auth, async (req, res) => {
   try {
     const licenses = await License.find().sort({ updatedAt: -1 });
 
-    const formattedLicenses = licenses.map(license => ({
+    // Helper to safely format dates
+    const formatSafeDate = (date) => {
+      if (!date) return null;
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return null; // invalid date check
+      return d.toLocaleDateString('en-GB'); // DD/MM/YYYY
+    };
+
+    const formattedLicenses = licenses.map((license) => ({
       ...license._doc,
-      dob: new Date(license.dob).toLocaleDateString('en-GB'),
-      createdAt: new Date(license.createdAt).toLocaleDateString('en-GB'),
-      updatedAt: new Date(license.updatedAt).toLocaleDateString('en-GB'),
+      dob: formatSafeDate(license.dob),
+      createdAt: formatSafeDate(license.createdAt),
+      updatedAt: formatSafeDate(license.updatedAt),
     }));
 
     res.json(formattedLicenses);
@@ -33,6 +42,7 @@ router.get('/', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
 
 
 // ✅ CREATE license

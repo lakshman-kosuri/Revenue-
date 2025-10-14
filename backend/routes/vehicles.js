@@ -7,8 +7,11 @@ const router = express.Router();
 // ✅ Helper function to format date as DD/MM/YYYY
 const formatDate = (date) => {
   if (!date) return null;
-  return new Date(date).toLocaleDateString('en-GB');
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null; // invalid date check
+  return d.toLocaleDateString('en-GB'); // DD/MM/YYYY
 };
+
 
 // ✅ Function to format vehicle object before sending response
 const formatVehicle = (vehicle) => ({
