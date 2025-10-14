@@ -1,14 +1,45 @@
 import express from 'express';
+import { formatDate } from '../utils/formatDate.js';
 import Vehicle from '../models/Vehicle.js';
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
 // ✅ GET all vehicles
+// router.get('/', auth, async (req, res) => {
+//   try {
+//     const vehicles = await Vehicle.find().sort({ updatedAt: -1 });
+//     res.json(vehicles);
+//   } catch (err) {
+//     console.error("ERROR FETCHING VEHICLES:", err);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// });
+
 router.get('/', auth, async (req, res) => {
   try {
     const vehicles = await Vehicle.find().sort({ updatedAt: -1 });
-    res.json(vehicles);
+
+    // Map vehicles and format all date fields
+    const formattedVehicles = vehicles.map(v => ({
+      ...v.toObject(),
+      brakeInsurance: {
+        ...v.brakeInsurance,
+        expiryDate: formatDate(v.brakeInsurance?.expiryDate),
+      },
+      permit: {
+        ...v.permit,
+        expiryDate: formatDate(v.permit?.expiryDate),
+      },
+      tax: {
+        ...v.tax,
+        expiryDate: formatDate(v.tax?.expiryDate),
+      },
+      fitnessValidity: formatDate(v.fitnessValidity),
+      pucDate: formatDate(v.pucDate),
+    }));
+
+    res.json(formattedVehicles);
   } catch (err) {
     console.error("ERROR FETCHING VEHICLES:", err);
     res.status(500).json({ message: 'Server error', error: err.message });
