@@ -9,7 +9,22 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
   const [editingVehicleId, setEditingVehicleId] = useState(null);
   const [updatedDetails, setUpdatedDetails] = useState({});
 
-  // Filter vehicles
+  // --- Helper functions ---
+  const parseBackendDate = (dateStr) => {
+    // Converts DD/MM/YYYY to YYYY-MM-DD for input[type="date"]
+    if (!dateStr) return "";
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  };
+
+  const formatBackendDate = (dateStr) => {
+    // Converts YYYY-MM-DD to DD/MM/YYYY before sending to backend
+    if (!dateStr) return null;
+    const [year, month, day] = dateStr.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  // --- Filter vehicles ---
   const filteredVehicles = vehicles.filter((v) => {
     const matchesVehicleNo = v.vehicleNo
       ?.toLowerCase()
@@ -17,47 +32,33 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
     if (!matchesVehicleNo) return false;
     if (!searchDate) return true;
 
-    const formattedSearchDate = new Date(searchDate)
-      .toISOString()
-      .split("T")[0];
+    const formattedSearchDate = searchDate;
 
     const matchesInsurance =
       v.brakeInsurance?.expiryDate &&
-      new Date(v.brakeInsurance.expiryDate).toISOString().split("T")[0] ===
-        formattedSearchDate;
+      parseBackendDate(v.brakeInsurance.expiryDate) === formattedSearchDate;
     const matchesPermit =
       v.permit?.expiryDate &&
-      new Date(v.permit.expiryDate).toISOString().split("T")[0] ===
-        formattedSearchDate;
+      parseBackendDate(v.permit.expiryDate) === formattedSearchDate;
     const matchesTax =
-      v.tax?.expiryDate &&
-      new Date(v.tax.expiryDate).toISOString().split("T")[0] ===
-        formattedSearchDate;
+      v.tax?.expiryDate && parseBackendDate(v.tax.expiryDate) === formattedSearchDate;
     const matchesFitness =
-      v.fitnessValidity &&
-      new Date(v.fitnessValidity).toISOString().split("T")[0] ===
-        formattedSearchDate;
+      v.fitnessValidity && parseBackendDate(v.fitnessValidity) === formattedSearchDate;
     const matchesPUC =
-      v.pucDate &&
-      new Date(v.pucDate).toISOString().split("T")[0] === formattedSearchDate;
+      v.pucDate && parseBackendDate(v.pucDate) === formattedSearchDate;
 
     if (filterCategory === "all")
-      return (
-        matchesInsurance ||
-        matchesPermit ||
-        matchesTax ||
-        matchesFitness ||
-        matchesPUC
-      );
+      return matchesInsurance || matchesPermit || matchesTax || matchesFitness || matchesPUC;
     if (filterCategory === "insurance") return matchesInsurance;
     if (filterCategory === "permit") return matchesPermit;
     if (filterCategory === "tax") return matchesTax;
     if (filterCategory === "fitness") return matchesFitness;
     if (filterCategory === "puc") return matchesPUC;
+
     return false;
   });
 
-  // Handle update with toast
+  // --- Handle update ---
   const handleUpdate = async (vehicle) => {
     const payload = {
       vehicleNo: updatedDetails.vehicleNo,
@@ -66,54 +67,40 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       phone: updatedDetails.phone,
       brakeInsurance: {
         insuranceNo: updatedDetails.insuranceNo,
-        // Dates from date input fields are typically YYYY-MM-DD strings
-        expiryDate: updatedDetails.insuranceExpiry, 
+        expiryDate: formatBackendDate(updatedDetails.insuranceExpiry),
       },
       permit: {
         permitNo: updatedDetails.permitNo,
-        expiryDate: updatedDetails.permitExpiry,
+        expiryDate: formatBackendDate(updatedDetails.permitExpiry),
       },
       tax: {
         amount: updatedDetails.taxAmount,
-        expiryDate: updatedDetails.taxExpiry,
+        expiryDate: formatBackendDate(updatedDetails.taxExpiry),
       },
       fitnessNumber: updatedDetails.fitnessNumber,
-      fitnessValidity: updatedDetails.fitnessValidity,
-      pucDate: updatedDetails.pucDate,
+      fitnessValidity: formatBackendDate(updatedDetails.fitnessValidity),
+      pucDate: formatBackendDate(updatedDetails.pucDate),
     };
 
     try {
-      // Call the parent function (handleUpdateVehicle in Dashboard)
-      await onUpdate(vehicle._id, payload); 
-      
-      // 🔥 Removed: toast.success is now handled in Dashboard.jsx
-      
-      // Cleanup UI state
+      await onUpdate(vehicle._id, payload);
       setEditingVehicleId(null);
       setUpdatedDetails({});
     } catch (err) {
-      // KEEP: Error toast is triggered by the re-thrown error from Dashboard
       console.error(err);
       toast.error("Failed to update vehicle", { duration: 3000 });
     }
   };
 
-  // Handle delete with toast
   const handleDelete = async (id) => {
     try {
-      // Call the parent function (handleDeleteVehicle in Dashboard)
       await onDelete(id);
-      
-      // 🔥 Removed: toast.success is now handled in Dashboard.jsx
-      
     } catch (err) {
-      // KEEP: Error toast is triggered by the re-thrown error from Dashboard
       console.error(err);
       toast.error("Failed to delete vehicle", { duration: 3000 });
     }
   };
 
-  // Enable editing
   const handleEditClick = (vehicle) => {
     setEditingVehicleId(vehicle._id);
     setUpdatedDetails({
@@ -121,16 +108,15 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       ownerName: vehicle.ownerName,
       address: vehicle.address,
       phone: vehicle.phone,
-      insuranceNo: vehicle.brakeInsurance?.insuranceNo,
-      // Pass only the YYYY-MM-DD part for the date input
-      insuranceExpiry: vehicle.brakeInsurance?.expiryDate ? vehicle.brakeInsurance.expiryDate.split("T")[0] : "",
-      permitNo: vehicle.permit?.permitNo,
-      permitExpiry: vehicle.permit?.expiryDate ? vehicle.permit.expiryDate.split("T")[0] : "",
-      taxAmount: vehicle.tax?.amount,
-      taxExpiry: vehicle.tax?.expiryDate ? vehicle.tax.expiryDate.split("T")[0] : "",
-      fitnessNumber: vehicle.fitnessNumber,
-      fitnessValidity: vehicle.fitnessValidity ? vehicle.fitnessValidity.split("T")[0] : "",
-      pucDate: vehicle.pucDate ? vehicle.pucDate.split("T")[0] : "",
+      insuranceNo: vehicle.brakeInsurance?.insuranceNo || "",
+      insuranceExpiry: parseBackendDate(vehicle.brakeInsurance?.expiryDate),
+      permitNo: vehicle.permit?.permitNo || "",
+      permitExpiry: parseBackendDate(vehicle.permit?.expiryDate),
+      taxAmount: vehicle.tax?.amount || "",
+      taxExpiry: parseBackendDate(vehicle.tax?.expiryDate),
+      fitnessNumber: vehicle.fitnessNumber || "",
+      fitnessValidity: parseBackendDate(vehicle.fitnessValidity),
+      pucDate: parseBackendDate(vehicle.pucDate),
     });
   };
 
@@ -200,23 +186,10 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
           </thead>
           <tbody>
             {filteredVehicles.map((v) => {
-              // Your existing expired-row logic
               const isExpiredToday =
-                (v.brakeInsurance?.expiryDate &&
-                  new Date(v.brakeInsurance.expiryDate)
-                    .toISOString()
-                    .split("T")[0] ===
-                    new Date().toISOString().split("T")[0]) ||
-                (v.permit?.expiryDate &&
-                  new Date(v.permit.expiryDate)
-                    .toISOString()
-                    .split("T")[0] ===
-                    new Date().toISOString().split("T")[0]) ||
-                (v.tax?.expiryDate &&
-                  new Date(v.tax.expiryDate)
-                    .toISOString()
-                    .split("T")[0] ===
-                    new Date().toISOString().split("T")[0]);
+                ["brakeInsurance", "permit", "tax"].some((field) => {
+                  return v[field]?.expiryDate === new Date().toLocaleDateString("en-GB");
+                });
 
               return (
                 <tr key={v._id} className={isExpiredToday ? "expired-row" : ""}>
@@ -259,7 +232,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
                         <input
                           type="date"
                           name="insuranceExpiry"
-                          // Only show YYYY-MM-DD for date inputs
                           value={updatedDetails.insuranceExpiry || ""}
                           onChange={handleChange}
                         />
@@ -336,14 +308,14 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
                       <td>{v.ownerName}</td>
                       <td>{v.phone}</td>
                       <td>{v.brakeInsurance?.insuranceNo || "-"}</td>
-                      <td>{v.brakeInsurance?.expiryDate ? new Date(v.brakeInsurance.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{v.brakeInsurance?.expiryDate || "-"}</td>
                       <td>{v.permit?.permitNo || "-"}</td>
-                      <td>{v.permit?.expiryDate ? new Date(v.permit.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{v.permit?.expiryDate || "-"}</td>
                       <td>{v.tax?.amount || "-"}</td>
-                      <td>{v.tax?.expiryDate ? new Date(v.tax.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{v.tax?.expiryDate || "-"}</td>
                       <td>{v.fitnessNumber || "-"}</td>
-                      <td>{v.fitnessValidity ? new Date(v.fitnessValidity).toLocaleDateString() : "-"}</td>
-                      <td>{v.pucDate ? new Date(v.pucDate).toLocaleDateString() : "-"}</td>
+                      <td>{v.fitnessValidity || "-"}</td>
+                      <td>{v.pucDate || "-"}</td>
                       <td>
                         <button onClick={() => handleEditClick(v)} className="edit-btn">
                           Edit

@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = "https://revenue-19uf.onrender.com//api"; // for production
+const API_URL = "https://revenue-19uf.onrender.com/api";
+
+
 
 
 // ================= AUTH =================

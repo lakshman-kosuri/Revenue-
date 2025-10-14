@@ -4,6 +4,20 @@ import './VehicleForm.css';
 import { addVehicle } from '../services/api'; // Your API function
 
 const VehicleForm = ({ token, onAdd }) => {
+  // Helper functions
+  const parseDateForInput = (dateStr) => {
+    if (!dateStr) return '';
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+  };
+
+  const formatDateForBackend = (dateStr) => {
+    if (!dateStr) return null;
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
+  // Form state
   const [vehicleNo, setVehicleNo] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [address, setAddress] = useState('');
@@ -14,8 +28,6 @@ const VehicleForm = ({ token, onAdd }) => {
   const [permitExpiry, setPermitExpiry] = useState('');
   const [taxAmount, setTaxAmount] = useState('');
   const [taxExpiry, setTaxExpiry] = useState('');
-
-  // New fields
   const [fitnessNumber, setFitnessNumber] = useState('');
   const [fitnessValidity, setFitnessValidity] = useState('');
   const [pucDate, setPucDate] = useState('');
@@ -23,26 +35,34 @@ const VehicleForm = ({ token, onAdd }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-   const vehicleData = {
-  vehicleNo,
-  ownerName,
-  address,
-  phone,
-  brakeInsurance: { insuranceNo, expiryDate: insuranceExpiry ? new Date(insuranceExpiry) : null },
-  permit: { permitNo, expiryDate: permitExpiry ? new Date(permitExpiry) : null },
-  tax: { amount: taxAmount ? Number(taxAmount) : null, expiryDate: taxExpiry ? new Date(taxExpiry) : null },
-  fitnessNumber,
-  fitnessValidity: fitnessValidity ? new Date(fitnessValidity) : null,
-  pucDate: pucDate ? new Date(pucDate) : null,
-};
-
+    const vehicleData = {
+      vehicleNo,
+      ownerName,
+      address,
+      phone,
+      brakeInsurance: { 
+        insuranceNo, 
+        expiryDate: insuranceExpiry ? formatDateForBackend(insuranceExpiry) : null 
+      },
+      permit: { 
+        permitNo, 
+        expiryDate: permitExpiry ? formatDateForBackend(permitExpiry) : null 
+      },
+      tax: { 
+        amount: taxAmount ? Number(taxAmount) : null, 
+        expiryDate: taxExpiry ? formatDateForBackend(taxExpiry) : null 
+      },
+      fitnessNumber,
+      fitnessValidity: fitnessValidity ? formatDateForBackend(fitnessValidity) : null,
+      pucDate: pucDate ? formatDateForBackend(pucDate) : null,
+    };
 
     try {
-  const data = await addVehicle(vehicleData, token);
-  toast.success(data.message); // <-- Use backend message
-  onAdd(); // Refresh the vehicle list
+      const data = await addVehicle(vehicleData, token);
+      toast.success(data.message);
+      onAdd(); // Refresh the vehicle list
 
-      // Reset form after successful submission
+      // Reset form
       setVehicleNo('');
       setOwnerName('');
       setAddress('');
@@ -57,7 +77,7 @@ const VehicleForm = ({ token, onAdd }) => {
       setFitnessValidity('');
       setPucDate('');
     } catch (err) {
-  toast.error(err.response?.data?.message || 'Error adding vehicle');
+      toast.error(err.response?.data?.message || 'Error adding vehicle');
     }
   };
 
