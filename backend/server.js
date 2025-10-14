@@ -8,16 +8,18 @@ import licenseRoutes from './routes/licenses.js';
 
 const app = express();
 
-// ✅ Configure CORS for your frontend
+
+
+// ✅ Configure CORS explicitly
 const corsOptions = {
-  origin: 'https://revenue-2.onrender.com', // only your deployed frontend
+  origin: 'https://revenue-2.onrender.com',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // only needed if sending cookies
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
-// ✅ Parse JSON and form data
+// ✅ Parse JSON and form-data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,7 +29,7 @@ await connectDB(process.env.MONGO_URI);
 // ✅ Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/licenses', licenseRoutes);
+app.use('/api/licenses', licenseRoutes); // <-- added licenses route
 
 // ✅ Default route
 app.get('/', (req, res) => {
