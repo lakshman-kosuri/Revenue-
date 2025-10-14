@@ -9,16 +9,24 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
   const [editingVehicleId, setEditingVehicleId] = useState(null);
   const [updatedDetails, setUpdatedDetails] = useState({});
 
-  // --- Helper functions ---
-  const parseBackendDate = (dateStr) => {
-    // Converts DD/MM/YYYY to YYYY-MM-DD for input[type="date"]
+  // --- Safe date parser ---
+  const parseDateForInput = (dateStr) => {
     if (!dateStr) return "";
-    const [day, month, year] = dateStr.split("/");
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    let dateObj;
+
+    // Handle DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+      const [day, month, year] = dateStr.split("/");
+      dateObj = new Date(`${year}-${month}-${day}`);
+    } else {
+      // Try generic Date parse (ISO or other)
+      dateObj = new Date(dateStr);
+    }
+
+    return isNaN(dateObj.getTime()) ? "" : dateObj.toISOString().split("T")[0];
   };
 
-  const formatBackendDate = (dateStr) => {
-    // Converts YYYY-MM-DD to DD/MM/YYYY before sending to backend
+  const formatDateForBackend = (dateStr) => {
     if (!dateStr) return null;
     const [year, month, day] = dateStr.split("-");
     return `${day}/${month}/${year}`;
@@ -36,16 +44,18 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
 
     const matchesInsurance =
       v.brakeInsurance?.expiryDate &&
-      parseBackendDate(v.brakeInsurance.expiryDate) === formattedSearchDate;
+      parseDateForInput(v.brakeInsurance.expiryDate) === formattedSearchDate;
     const matchesPermit =
       v.permit?.expiryDate &&
-      parseBackendDate(v.permit.expiryDate) === formattedSearchDate;
+      parseDateForInput(v.permit.expiryDate) === formattedSearchDate;
     const matchesTax =
-      v.tax?.expiryDate && parseBackendDate(v.tax.expiryDate) === formattedSearchDate;
+      v.tax?.expiryDate &&
+      parseDateForInput(v.tax.expiryDate) === formattedSearchDate;
     const matchesFitness =
-      v.fitnessValidity && parseBackendDate(v.fitnessValidity) === formattedSearchDate;
+      v.fitnessValidity &&
+      parseDateForInput(v.fitnessValidity) === formattedSearchDate;
     const matchesPUC =
-      v.pucDate && parseBackendDate(v.pucDate) === formattedSearchDate;
+      v.pucDate && parseDateForInput(v.pucDate) === formattedSearchDate;
 
     if (filterCategory === "all")
       return matchesInsurance || matchesPermit || matchesTax || matchesFitness || matchesPUC;
@@ -67,19 +77,19 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       phone: updatedDetails.phone,
       brakeInsurance: {
         insuranceNo: updatedDetails.insuranceNo,
-        expiryDate: formatBackendDate(updatedDetails.insuranceExpiry),
+        expiryDate: formatDateForBackend(updatedDetails.insuranceExpiry),
       },
       permit: {
         permitNo: updatedDetails.permitNo,
-        expiryDate: formatBackendDate(updatedDetails.permitExpiry),
+        expiryDate: formatDateForBackend(updatedDetails.permitExpiry),
       },
       tax: {
         amount: updatedDetails.taxAmount,
-        expiryDate: formatBackendDate(updatedDetails.taxExpiry),
+        expiryDate: formatDateForBackend(updatedDetails.taxExpiry),
       },
       fitnessNumber: updatedDetails.fitnessNumber,
-      fitnessValidity: formatBackendDate(updatedDetails.fitnessValidity),
-      pucDate: formatBackendDate(updatedDetails.pucDate),
+      fitnessValidity: formatDateForBackend(updatedDetails.fitnessValidity),
+      pucDate: formatDateForBackend(updatedDetails.pucDate),
     };
 
     try {
@@ -109,14 +119,14 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       address: vehicle.address,
       phone: vehicle.phone,
       insuranceNo: vehicle.brakeInsurance?.insuranceNo || "",
-      insuranceExpiry: parseBackendDate(vehicle.brakeInsurance?.expiryDate),
+      insuranceExpiry: parseDateForInput(vehicle.brakeInsurance?.expiryDate),
       permitNo: vehicle.permit?.permitNo || "",
-      permitExpiry: parseBackendDate(vehicle.permit?.expiryDate),
+      permitExpiry: parseDateForInput(vehicle.permit?.expiryDate),
       taxAmount: vehicle.tax?.amount || "",
-      taxExpiry: parseBackendDate(vehicle.tax?.expiryDate),
+      taxExpiry: parseDateForInput(vehicle.tax?.expiryDate),
       fitnessNumber: vehicle.fitnessNumber || "",
-      fitnessValidity: parseBackendDate(vehicle.fitnessValidity),
-      pucDate: parseBackendDate(vehicle.pucDate),
+      fitnessValidity: parseDateForInput(vehicle.fitnessValidity),
+      pucDate: parseDateForInput(vehicle.pucDate),
     });
   };
 
@@ -129,7 +139,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
     <div className="vehicle-list-container">
       <h3>Vehicles</h3>
 
-      {/* Filters */}
       <div className="filters-section">
         <div className="filter-group">
           <label>Search by Vehicle No</label>
@@ -140,6 +149,7 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
             onChange={(e) => setSearchNo(e.target.value)}
           />
         </div>
+
         <div className="filter-group">
           <label>Filter by Expiry Type</label>
           <select
@@ -154,6 +164,7 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
             <option value="puc">PUC</option>
           </select>
         </div>
+
         <div className="filter-group">
           <label>Filter by Date</label>
           <input
@@ -164,7 +175,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
         </div>
       </div>
 
-      {/* Vehicle Table */}
       <div className="vehicle-table-section">
         <table className="vehicle-table">
           <thead>
@@ -186,127 +196,37 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
           </thead>
           <tbody>
             {filteredVehicles.map((v) => {
-              const isExpiredToday =
-                ["brakeInsurance", "permit", "tax"].some((field) => {
-                  return v[field]?.expiryDate === new Date().toLocaleDateString("en-GB");
-                });
+              const isExpiredToday = ["brakeInsurance", "permit", "tax"].some(
+                (field) =>
+                  parseDateForInput(v[field]?.expiryDate) ===
+                  new Date().toISOString().split("T")[0]
+              );
 
               return (
                 <tr key={v._id} className={isExpiredToday ? "expired-row" : ""}>
                   {editingVehicleId === v._id ? (
                     <>
-                      {/* Editable Fields */}
+                      {Object.entries(updatedDetails).map(([key, val]) => (
+                        <td key={key}>
+                          {(key.includes("Expiry") || key.includes("Validity") || key === "pucDate") ? (
+                            <input type="date" name={key} value={val || ""} onChange={handleChange} />
+                          ) : key === "taxAmount" ? (
+                            <input type="number" name={key} value={val || ""} onChange={handleChange} />
+                          ) : (
+                            <input type="text" name={key} value={val || ""} onChange={handleChange} />
+                          )}
+                        </td>
+                      ))}
                       <td>
-                        <input
-                          type="text"
-                          name="vehicleNo"
-                          value={updatedDetails.vehicleNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="ownerName"
-                          value={updatedDetails.ownerName || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="phone"
-                          value={updatedDetails.phone || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="insuranceNo"
-                          value={updatedDetails.insuranceNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="insuranceExpiry"
-                          value={updatedDetails.insuranceExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="permitNo"
-                          value={updatedDetails.permitNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="permitExpiry"
-                          value={updatedDetails.permitExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          name="taxAmount"
-                          value={updatedDetails.taxAmount || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="taxExpiry"
-                          value={updatedDetails.taxExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="fitnessNumber"
-                          value={updatedDetails.fitnessNumber || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="fitnessValidity"
-                          value={updatedDetails.fitnessValidity || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="pucDate"
-                          value={updatedDetails.pucDate || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <button onClick={() => handleUpdate(v)} className="save-btn">
-                          Save
-                        </button>
-                        <button onClick={() => setEditingVehicleId(null)} className="cancel-btn">
-                          Cancel
-                        </button>
+                        <button onClick={() => handleUpdate(v)} className="save-btn">Save</button>
+                        <button onClick={() => setEditingVehicleId(null)} className="cancel-btn">Cancel</button>
                       </td>
                     </>
                   ) : (
                     <>
-                      {/* Display Fields */}
-                      <td>{v.vehicleNo}</td>
-                      <td>{v.ownerName}</td>
-                      <td>{v.phone}</td>
+                      <td>{v.vehicleNo || "-"}</td>
+                      <td>{v.ownerName || "-"}</td>
+                      <td>{v.phone || "-"}</td>
                       <td>{v.brakeInsurance?.insuranceNo || "-"}</td>
                       <td>{v.brakeInsurance?.expiryDate || "-"}</td>
                       <td>{v.permit?.permitNo || "-"}</td>
@@ -317,12 +237,8 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
                       <td>{v.fitnessValidity || "-"}</td>
                       <td>{v.pucDate || "-"}</td>
                       <td>
-                        <button onClick={() => handleEditClick(v)} className="edit-btn">
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(v._id)} className="delete-btn">
-                          Delete
-                        </button>
+                        <button onClick={() => handleEditClick(v)} className="edit-btn">Edit</button>
+                        <button onClick={() => handleDelete(v._id)} className="delete-btn">Delete</button>
                       </td>
                     </>
                   )}

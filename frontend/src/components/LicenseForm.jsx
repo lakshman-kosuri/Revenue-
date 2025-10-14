@@ -9,11 +9,11 @@ const LicenseForm = ({ token, onAdd }) => {
   const [dob, setDob] = useState('');
   const [licenseNumber, setLicenseNumber] = useState('');
 
-  // Helper: Convert date from YYYY-MM-DD (input) to DD/MM/YYYY (backend)
+  // ✅ Helper: convert input date to ISO string for backend
   const formatDateForBackend = (dateStr) => {
     if (!dateStr) return null;
-    const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? null : date.toISOString();
   };
 
   const handleSubmit = async (e) => {
@@ -23,15 +23,15 @@ const LicenseForm = ({ token, onAdd }) => {
       holderName,
       phone,
       dob: formatDateForBackend(dob),
-      licenseNumber
+      licenseNumber,
     };
 
     try {
       await addLicense(licenseData, token);
       toast.success('License added successfully!');
-      onAdd(); // Refresh list in parent
+      onAdd(); // Refresh parent list
 
-      // Clear form
+      // Clear form fields
       setHolderName('');
       setPhone('');
       setDob('');

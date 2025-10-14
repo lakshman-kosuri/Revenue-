@@ -8,14 +8,21 @@ const LicenseList = ({ licenses, onDelete, onUpdate }) => {
   const [editingLicenseId, setEditingLicenseId] = useState(null);
   const [updatedDetails, setUpdatedDetails] = useState({});
 
-  // Filter licenses by license number and holder name
+  // --- Utility function for safe date formatting ---
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '-';
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
+  };
+
+  // --- Filter licenses by license number and holder name ---
   const filteredLicenses = licenses.filter((l) => {
     const matchesLicenseNo = l.licenseNumber?.toLowerCase().includes(searchNo.toLowerCase());
     const matchesHolderName = l.holderName?.toLowerCase().includes(searchName.toLowerCase());
     return matchesLicenseNo && matchesHolderName;
   });
 
-  // Update license
+  // --- Update license ---
   const handleUpdate = async (license) => {
     const payload = {
       licenseNumber: updatedDetails.licenseNumber,
@@ -34,7 +41,7 @@ const LicenseList = ({ licenses, onDelete, onUpdate }) => {
     }
   };
 
-  // Delete license
+  // --- Delete license ---
   const handleDelete = async (id) => {
     try {
       await onDelete(id);
@@ -44,17 +51,18 @@ const LicenseList = ({ licenses, onDelete, onUpdate }) => {
     }
   };
 
-  // Enable editing mode
+  // --- Enable editing mode ---
   const handleEditClick = (license) => {
     setEditingLicenseId(license._id);
     setUpdatedDetails({
-      licenseNumber: license.licenseNumber,
-      holderName: license.holderName,
-      phone: license.phone,
-      dob: license.dob ? license.dob.split('T')[0] : '', // YYYY-MM-DD for input
+      licenseNumber: license.licenseNumber || '',
+      holderName: license.holderName || '',
+      phone: license.phone || '',
+      dob: license.dob && !isNaN(new Date(license.dob)) ? license.dob.split('T')[0] : '',
     });
   };
 
+  // --- Handle input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedDetails((prev) => ({ ...prev, [name]: value }));
@@ -149,7 +157,7 @@ const LicenseList = ({ licenses, onDelete, onUpdate }) => {
                     <td>{l.licenseNumber || '-'}</td>
                     <td>{l.holderName || '-'}</td>
                     <td>{l.phone || '-'}</td>
-                    <td>{l.dob ? new Date(l.dob).toLocaleDateString() : '-'}</td>
+                    <td>{formatDate(l.dob)}</td>
                     <td>
                       <button onClick={() => handleEditClick(l)} className="edit-btn">
                         Edit
