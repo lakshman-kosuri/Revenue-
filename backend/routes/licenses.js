@@ -5,15 +5,35 @@ import auth from '../middleware/auth.js';
 const router = express.Router();
 
 // ✅ GET all licenses
+// router.get('/', auth, async (req, res) => {
+//   try {
+//     const licenses = await License.find().sort({ updatedAt: -1 });
+//     res.json(licenses);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// });
+
+// ✅ GET all licenses
 router.get('/', auth, async (req, res) => {
   try {
     const licenses = await License.find().sort({ updatedAt: -1 });
-    res.json(licenses);
+
+    const formattedLicenses = licenses.map(license => ({
+      ...license._doc,
+      dob: new Date(license.dob).toLocaleDateString('en-GB'),
+      createdAt: new Date(license.createdAt).toLocaleDateString('en-GB'),
+      updatedAt: new Date(license.updatedAt).toLocaleDateString('en-GB'),
+    }));
+
+    res.json(formattedLicenses);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
 
 // ✅ CREATE license
 router.post('/', auth, async (req, res) => {
