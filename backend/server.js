@@ -14,7 +14,7 @@ const app = express();
 const corsOptions = {
   // origin: 'https://gilded-selkie-dbc158.netlify.app',
   // origin: 'http://localhost:5173/',
-  origin: 'https://revenue-2.onrender.com',
+  origin: 'http://localhost:5173,https://revenue-2.onrender.com',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
