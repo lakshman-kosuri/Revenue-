@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { formatDate } from "../utils/formatDate"; // <-- import the util
 import "./VehicleList.css";
 
 const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
@@ -57,7 +58,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
     return false;
   });
 
-  // Handle update with toast
   const handleUpdate = async (vehicle) => {
     const payload = {
       vehicleNo: updatedDetails.vehicleNo,
@@ -66,7 +66,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       phone: updatedDetails.phone,
       brakeInsurance: {
         insuranceNo: updatedDetails.insuranceNo,
-        // Dates from date input fields are typically YYYY-MM-DD strings
         expiryDate: updatedDetails.insuranceExpiry, 
       },
       permit: {
@@ -83,37 +82,24 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
     };
 
     try {
-      // Call the parent function (handleUpdateVehicle in Dashboard)
-      await onUpdate(vehicle._id, payload); 
-      
-      // 🔥 Removed: toast.success is now handled in Dashboard.jsx
-      
-      // Cleanup UI state
+      await onUpdate(vehicle._id, payload);
       setEditingVehicleId(null);
       setUpdatedDetails({});
     } catch (err) {
-      // KEEP: Error toast is triggered by the re-thrown error from Dashboard
       console.error(err);
       toast.error("Failed to update vehicle", { duration: 3000 });
     }
   };
 
-  // Handle delete with toast
   const handleDelete = async (id) => {
     try {
-      // Call the parent function (handleDeleteVehicle in Dashboard)
       await onDelete(id);
-      
-      // 🔥 Removed: toast.success is now handled in Dashboard.jsx
-      
     } catch (err) {
-      // KEEP: Error toast is triggered by the re-thrown error from Dashboard
       console.error(err);
       toast.error("Failed to delete vehicle", { duration: 3000 });
     }
   };
 
-  // Enable editing
   const handleEditClick = (vehicle) => {
     setEditingVehicleId(vehicle._id);
     setUpdatedDetails({
@@ -122,14 +108,21 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
       address: vehicle.address,
       phone: vehicle.phone,
       insuranceNo: vehicle.brakeInsurance?.insuranceNo,
-      // Pass only the YYYY-MM-DD part for the date input
-      insuranceExpiry: vehicle.brakeInsurance?.expiryDate ? vehicle.brakeInsurance.expiryDate.split("T")[0] : "",
+      insuranceExpiry: vehicle.brakeInsurance?.expiryDate
+        ? vehicle.brakeInsurance.expiryDate.split("T")[0]
+        : "",
       permitNo: vehicle.permit?.permitNo,
-      permitExpiry: vehicle.permit?.expiryDate ? vehicle.permit.expiryDate.split("T")[0] : "",
+      permitExpiry: vehicle.permit?.expiryDate
+        ? vehicle.permit.expiryDate.split("T")[0]
+        : "",
       taxAmount: vehicle.tax?.amount,
-      taxExpiry: vehicle.tax?.expiryDate ? vehicle.tax.expiryDate.split("T")[0] : "",
+      taxExpiry: vehicle.tax?.expiryDate
+        ? vehicle.tax.expiryDate.split("T")[0]
+        : "",
       fitnessNumber: vehicle.fitnessNumber,
-      fitnessValidity: vehicle.fitnessValidity ? vehicle.fitnessValidity.split("T")[0] : "",
+      fitnessValidity: vehicle.fitnessValidity
+        ? vehicle.fitnessValidity.split("T")[0]
+        : "",
       pucDate: vehicle.pucDate ? vehicle.pucDate.split("T")[0] : "",
     });
   };
@@ -200,7 +193,6 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
           </thead>
           <tbody>
             {filteredVehicles.map((v) => {
-              // Your existing expired-row logic
               const isExpiredToday =
                 (v.brakeInsurance?.expiryDate &&
                   new Date(v.brakeInsurance.expiryDate)
@@ -222,111 +214,22 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
                 <tr key={v._id} className={isExpiredToday ? "expired-row" : ""}>
                   {editingVehicleId === v._id ? (
                     <>
-                      {/* Editable Fields */}
+                      {/* Editable Fields (date inputs stay YYYY-MM-DD) */}
+                      <td><input type="text" name="vehicleNo" value={updatedDetails.vehicleNo || ""} onChange={handleChange} /></td>
+                      <td><input type="text" name="ownerName" value={updatedDetails.ownerName || ""} onChange={handleChange} /></td>
+                      <td><input type="text" name="phone" value={updatedDetails.phone || ""} onChange={handleChange} /></td>
+                      <td><input type="text" name="insuranceNo" value={updatedDetails.insuranceNo || ""} onChange={handleChange} /></td>
+                      <td><input type="date" name="insuranceExpiry" value={updatedDetails.insuranceExpiry || ""} onChange={handleChange} /></td>
+                      <td><input type="text" name="permitNo" value={updatedDetails.permitNo || ""} onChange={handleChange} /></td>
+                      <td><input type="date" name="permitExpiry" value={updatedDetails.permitExpiry || ""} onChange={handleChange} /></td>
+                      <td><input type="number" name="taxAmount" value={updatedDetails.taxAmount || ""} onChange={handleChange} /></td>
+                      <td><input type="date" name="taxExpiry" value={updatedDetails.taxExpiry || ""} onChange={handleChange} /></td>
+                      <td><input type="text" name="fitnessNumber" value={updatedDetails.fitnessNumber || ""} onChange={handleChange} /></td>
+                      <td><input type="date" name="fitnessValidity" value={updatedDetails.fitnessValidity || ""} onChange={handleChange} /></td>
+                      <td><input type="date" name="pucDate" value={updatedDetails.pucDate || ""} onChange={handleChange} /></td>
                       <td>
-                        <input
-                          type="text"
-                          name="vehicleNo"
-                          value={updatedDetails.vehicleNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="ownerName"
-                          value={updatedDetails.ownerName || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="phone"
-                          value={updatedDetails.phone || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="insuranceNo"
-                          value={updatedDetails.insuranceNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="insuranceExpiry"
-                          // Only show YYYY-MM-DD for date inputs
-                          value={updatedDetails.insuranceExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="permitNo"
-                          value={updatedDetails.permitNo || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="permitExpiry"
-                          value={updatedDetails.permitExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          name="taxAmount"
-                          value={updatedDetails.taxAmount || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="taxExpiry"
-                          value={updatedDetails.taxExpiry || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          name="fitnessNumber"
-                          value={updatedDetails.fitnessNumber || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="fitnessValidity"
-                          value={updatedDetails.fitnessValidity || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="date"
-                          name="pucDate"
-                          value={updatedDetails.pucDate || ""}
-                          onChange={handleChange}
-                        />
-                      </td>
-                      <td>
-                        <button onClick={() => handleUpdate(v)} className="save-btn">
-                          Save
-                        </button>
-                        <button onClick={() => setEditingVehicleId(null)} className="cancel-btn">
-                          Cancel
-                        </button>
+                        <button onClick={() => handleUpdate(v)} className="save-btn">Save</button>
+                        <button onClick={() => setEditingVehicleId(null)} className="cancel-btn">Cancel</button>
                       </td>
                     </>
                   ) : (
@@ -336,21 +239,17 @@ const VehicleList = ({ vehicles, onDelete, onUpdate }) => {
                       <td>{v.ownerName}</td>
                       <td>{v.phone}</td>
                       <td>{v.brakeInsurance?.insuranceNo || "-"}</td>
-                      <td>{v.brakeInsurance?.expiryDate ? new Date(v.brakeInsurance.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{formatDate(v.brakeInsurance?.expiryDate)}</td>
                       <td>{v.permit?.permitNo || "-"}</td>
-                      <td>{v.permit?.expiryDate ? new Date(v.permit.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{formatDate(v.permit?.expiryDate)}</td>
                       <td>{v.tax?.amount || "-"}</td>
-                      <td>{v.tax?.expiryDate ? new Date(v.tax.expiryDate).toLocaleDateString() : "-"}</td>
+                      <td>{formatDate(v.tax?.expiryDate)}</td>
                       <td>{v.fitnessNumber || "-"}</td>
-                      <td>{v.fitnessValidity ? new Date(v.fitnessValidity).toLocaleDateString() : "-"}</td>
-                      <td>{v.pucDate ? new Date(v.pucDate).toLocaleDateString() : "-"}</td>
+                      <td>{formatDate(v.fitnessValidity)}</td>
+                      <td>{formatDate(v.pucDate)}</td>
                       <td>
-                        <button onClick={() => handleEditClick(v)} className="edit-btn">
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(v._id)} className="delete-btn">
-                          Delete
-                        </button>
+                        <button onClick={() => handleEditClick(v)} className="edit-btn">Edit</button>
+                        <button onClick={() => handleDelete(v._id)} className="delete-btn">Delete</button>
                       </td>
                     </>
                   )}
