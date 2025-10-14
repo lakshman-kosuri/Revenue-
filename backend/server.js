@@ -11,32 +11,12 @@ const app = express();
 
 
 // ✅ Configure CORS explicitly
-// const corsOptions = {
-//   // origin: 'https://gilded-selkie-dbc158.netlify.app',
-//   // origin: 'http://localhost:5173/',
-//   origin: ['http://localhost:5173','https://revenue-2.onrender.com'],
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true,
-// };
-
-const allowedOrigins = ['http://localhost:5173', 'https://revenue-2.onrender.com'];
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true); // valid origin
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: 'https://revenue-2.onrender.com',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 
 // ✅ Parse JSON and form-data

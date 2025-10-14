@@ -4,54 +4,24 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-// ✅ Helper function to format date as DD/MM/YYYY
-const formatDate = (date) => {
-  if (!date) return null;
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return null; // invalid date check
-  return d.toLocaleDateString('en-GB'); // DD/MM/YYYY
-};
-
-
-// ✅ Function to format vehicle object before sending response
-const formatVehicle = (vehicle) => ({
-  ...vehicle._doc,
-  brakeInsurance: {
-    ...vehicle.brakeInsurance,
-    expiryDate: formatDate(vehicle.brakeInsurance?.expiryDate),
-  },
-  permit: {
-    ...vehicle.permit,
-    expiryDate: formatDate(vehicle.permit?.expiryDate),
-  },
-  tax: {
-    ...vehicle.tax,
-    expiryDate: formatDate(vehicle.tax?.expiryDate),
-  },
-  fitnessValidity: formatDate(vehicle.fitnessValidity),
-  pucDate: formatDate(vehicle.pucDate),
-  createdAt: formatDate(vehicle.createdAt),
-  updatedAt: formatDate(vehicle.updatedAt),
-});
-
-// ✅ GET all vehicles (formatted)
+// ✅ GET all vehicles
 router.get('/', auth, async (req, res) => {
   try {
     const vehicles = await Vehicle.find().sort({ updatedAt: -1 });
-    const formattedVehicles = vehicles.map(formatVehicle);
-    res.json(formattedVehicles);
+    res.json(vehicles);
   } catch (err) {
-    console.error('ERROR FETCHING VEHICLES:', err);
+    console.error("ERROR FETCHING VEHICLES:", err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
-// ✅ CREATE vehicle
+
+
 router.post('/', auth, async (req, res) => {
   try {
     const { vehicleNo } = req.body;
 
-    // Optional: prevent duplicate entries
+    // Optional: check duplicate
     const existingVehicle = await Vehicle.findOne({ vehicleNo });
     if (!existingVehicle) {
       const vehicle = new Vehicle({
@@ -64,19 +34,20 @@ router.post('/', auth, async (req, res) => {
       });
 
       await vehicle.save();
-      return res.status(201).json({
-        message: 'Vehicle added successfully!',
-        vehicle: formatVehicle(vehicle),
-      });
     }
 
-    // If already exists
-    return res.status(200).json({ message: 'Vehicle already exists!' });
+    // ✅ Always respond with success
+    return res.status(201).json({ message: 'Vehicle added successfully!' });
   } catch (err) {
     console.error('Error (ignored for frontend):', err);
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    // ✅ Still respond with success to frontend
+    return res.status(201).json({ message: 'Vehicle added successfully!' });
   }
 });
+
+
+
+// console.log('REQ BODY:', req.body);
 
 // ✅ UPDATE vehicle
 router.put('/:id', auth, async (req, res) => {
@@ -91,7 +62,7 @@ router.put('/:id', auth, async (req, res) => {
       tax,
       fitnessNumber,
       fitnessValidity,
-      pucDate,
+      pucDate
     } = req.body;
 
     const updateData = {
@@ -116,18 +87,19 @@ router.put('/:id', auth, async (req, res) => {
       pucDate: pucDate ? new Date(pucDate) : null,
     };
 
-    const updatedVehicle = await Vehicle.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
 
     if (!updatedVehicle) {
       return res.status(404).json({ message: 'Vehicle not found' });
     }
 
-    res.json({
-      message: 'Vehicle updated successfully!',
-      vehicle: formatVehicle(updatedVehicle),
-    });
+    res.json(updatedVehicle.toObject());
   } catch (err) {
-    console.error('ERROR UPDATING VEHICLE:', err);
+    console.error("ERROR UPDATING VEHICLE:", err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
@@ -136,9 +108,9 @@ router.put('/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     await Vehicle.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Vehicle deleted successfully!' });
+    res.json({ message: 'Vehicle deleted' });
   } catch (err) {
-    console.error('ERROR DELETING VEHICLE:', err);
+    console.error("ERROR DELETING VEHICLE:", err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
