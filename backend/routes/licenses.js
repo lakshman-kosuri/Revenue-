@@ -1,7 +1,7 @@
 import express from 'express';
 import License from '../models/License.js';
 import auth from '../middleware/auth.js';
-import { formatDate } from '../utils/formatDate.js'; 
+import { formatDate } from '../utils/formatDate.js';
 
 const router = express.Router();
 
